@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<!-- Template borrowed from Arun Chaganty -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <title></title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <style>
+    .example-header {
+      font-size: 150%;
+      font-weight: bold;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+    
+<div class="page-header">
+<h1>Answer Reading Comprehension Questions</h1>
+</div>
+
+<div class="col-md-12">
+
+<div class="panel panel-default panel-info">
+  <div class="panel-heading">
+    <h3 class="panel-title">Instructions</h3>
+  </div>
+  <div class="panel-body">
+  <p>
+  In each task, you will be shown a paragraph, e.g.
+  <blockquote> <i>
+Super Bowl 50 was an American football game to determine the champion of the National Football League (NFL) for the 2015 season. The American Football Conference (AFC) champion Denver Broncos defeated the National Football Conference (NFC) champion Carolina Panthers 24–10 to earn their third Super Bowl title. The game was played on February 7, 2016, at Levi's Stadium in the San Francisco Bay Area at Santa Clara, California. As this was the 50th Super Bowl, the league emphasized the "golden anniversary" with various gold-themed initiatives, as well as temporarily suspending the tradition of naming each Super Bowl game with Roman numerals (under which the game would have been known as "Super Bowl L"), so that the logo could prominently feature the Arabic numerals 50.
+</i>
+    </blockquote> 
+    and a question, e.g.
+    <blockquote>
+Who won Super Bowl 50?
+    </blockquote>
+    Your job will be to answer the question using an <b>exact phrase from the paragraph</b>.
+    You are <b>encouraged to copy-and-paste</b> a selection from the paragraph as your answer.
+    Some further guidelines:
+    <ul>
+      <li> Please rely only on what is written in the passage to answer the question.
+      <li> Give the <b>shortest phrase</b> that answers the question.
+      <li> If multiple answers seem correct, pick what you think is the best answer to the question.
+      <li> Please read the paragraph <b>carefully</b> to avoid mistakes.
+    </ul>
+
+    For the paragraph and question given above, some examples of good and bad answers are:
+    <ul>
+      <li> &#x2713; <span style="color: green;"><b>Denver Broncos</b></span>: 
+      This is the best answer to provide.
+      <li> &#x2717; <span style="color: red;"><b>Carolina Panthers</b></span>:
+      This is an incorrect answer.
+      <li> &#x2717; <span style="color: red;"><b>
+          The American Football Conference (AFC) champion Denver Broncos</b></span>:
+      This answer is correct, but excessively long.  Please prefer short answers.
+      <li> &#x2717; <span style="color: red;"><b>the Denver Broncos</b></span>: 
+      This answer is not an exact phrase used in the paragraph, so it is not permitted.
+    </ul>
+  <p>
+  <b>Estimated time for task:</b> 2 minutes.
+  </p>
+  <p>
+  <b>Note about evaluation:</b> 
+  Your responses will be compared to the responses of other workers on the same HIT before approval.
+  </p>
+</div>
+</div>
+
+<div class="panel panel-default panel-primary">
+  <div class="panel-heading">
+    <h3 class="panel-title">Task</h3>
+  </div>
+
+  <input type="hidden" name="id" id="id" value="${id}" />
+  <input type="hidden" name="qid" id="qid" value="${qid}" />
+  <input type="hidden" name="paragraph" id="paragraph" value="${paragraph}" />
+  <input type="hidden" name="question" id="question" value="${question}" />
+  <input type="hidden" name="response" id="response" value="" />
+
+  <div id="tasklist">
+  <div id="template" class="panel panel-default hidden">
+    <p>Consider the following paragraph:</p>
+
+    <blockquote>
+      <i>@@paragraph@@</i>
+    </blockquote>
+    <p>Based on this paragraph alone, <b> @@question@@ </b></p>
+    <div class="form-horizontal">
+      <div class="form-group">
+        <div class="col-sm-12">
+          <input type="text" class="form-control" id="response-@@i@@" placeholder="Copy and paste your answer here.">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div>
+
+  <div class="alert alert-danger hidden" id="errorBox">
+    Some responses were not filled.
+  </div>
+  <div class="alert alert-success hidden" id="successBox">
+    Thank you for your input!
+  </div>
+
+
+<input name="submit" class="btn btn-primary" type="submit" id="submitButton" value="Submit" />
+
+    <script type="text/javascript">
+
+function getData() {
+  var p = $("#paragraph").attr("value");
+  var q = $("#question").attr("value");
+  return [p, q]
+}
+
+  // Aggregate output.
+function validateInputs() {
+  // Check that the input has been inserted.
+  var success = true;
+  var response = $("#response-0").val();
+  $('#response').attr("value", response);
+  if(response.length == 0) {
+    success = false;
+  }
+  if (success) {
+    $("#errorBox").addClass("hidden");
+    $("#successBox").removeClass("hidden");
+  } else {
+    $("#errorBox").removeClass("hidden");
+    $("#successBox").addClass("hidden");
+  }
+  return success;
+}
+
+// Create a copy of the template class and replace key variables.
+function setData(p, q) {
+  var task = $("#template").clone();
+  // Set id
+  task.attr("id", "task");
+  // Replace @@paragraph@@ and @@question@@.
+  task.html(task.html()
+      .replace(/@@i@@/g, 0)
+      .replace(/@@paragraph@@/g, p)
+      .replace(/@@question@@/g, q));
+  // Make visible.
+  task.removeClass("hidden");
+  // Add to the tasklist
+  $("#tasklist").append(task);
+}
+
+$(document).ready(function() {
+  // Split prompts.
+  var data = getData();
+  // Set HTML for each task.
+  setData(data[0], data[1]);
+  
+  // Capture the submit button.
+  $('#submitButton').click(validateInputs);
+});
+    </script>
+
+</div>
+
+</div>
+
+
+    </div>
+  </body>
+</html>

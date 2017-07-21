@@ -1,0 +1,8 @@
+bottle
+nltk
+numpy
+pattern
+scipy
+scikit-learn
+termcolor
+tqdm

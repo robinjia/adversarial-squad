@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<!-- Template borrowed from Arun Chaganty -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <title></title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <style>
+    .example-header {
+      font-size: 150%;
+      font-weight: bold;
+    }
+    </style>
+  </head>
+<body>
+<div class="container">
+    
+<div class="page-header">
+<h1>Check sentences for grammaticality and content</h1>
+</div>
+
+<div class="col-md-12">
+
+<div class="panel panel-default panel-info">
+  <div class="panel-heading">
+    <h3 class="panel-title">Instructions</h3>
+  </div>
+  <div class="panel-body">
+  <p>
+    In each section of this task, you will be shown one question and a list of sentences.
+    You should vote "yes" on sentences that are grammatical and <b>do not answer the question</b>.
+    Otherwise, vote "no".
+  </p>
+  <p>
+    To be more precise, you should click "yes" if the sentence satisfies all of the following:
+    <ul>
+      <li> It does <b>not</b> answer the question.
+      <li> It is grammatical.
+      <li> It does not have any spelling errors or other typos.
+      <li> It does not use very unnatural phrasing
+      (things that a fluent speaker would never say, e.g. "The person of Anthony Rizzo caught the ball" 
+      is not acceptable).
+      <li> It is a statement, not a question.
+    </ul>
+    A sentence <b>can be considered good even if</b> it has some of the following flaws:
+    <ul>
+      <li> It says something false.
+      <li> It uses the wrong verb tense (e.g. "The event was held in 2024" is acceptable).
+    </ul>
+  </p>
+
+  <p> Here is an example:<br>
+  Question: <b>What was the win/loss ratio in 2015 for the Carolina Panthers during their regular season?</b>
+    <ul>
+      <li> <b>Yes</b> The 2020 regular season win/loss ratio for the Carolina Panthers was 7-9.
+      <li> <b>Yes</b> The record for the Michigan Vikings was 3-13 in 2015.
+      <li> <b>Yes</b> The win/loss ratio for the Michigan Vikings was 656.
+      <li> <b>No</b> The 2015 regular season win/loss ratio for the Carolina Panthers was 4-12. <i>(answers the question)</i>
+      <li> <b>No</b> The win/loss ratio for the Panthers was 4-12. <i>(answers the question)</i>
+      <li> <b>No</b> The Michigan Vikings did a ratio 9-7. <i>(ungrammatical)</i>
+      <li> <b>No</b> The Panthers of the year of 2011 had record 11-5. <i>(unnatural phrase "of the year of 2011")</i>
+      <li> <b>No</b> What was the Panthers record in 2015. <i>(must be a statement, not a question)</i>
+    </ul>
+  <p>
+  <b>Estimated time for task:</b> 3 minutes.
+  </p>
+  <p>
+  <b>Note about evaluation:</b> 
+  Your responses will be compared to the responses of other workers on the same HIT.
+  </p>
+</div>
+</div>
+
+<div class="panel panel-default panel-primary">
+  <div class="panel-heading">
+    <h3 class="panel-title">Task</h3>
+  </div>
+
+  <input type="hidden" name="id" id="id" value="${id}" />
+  <input type="hidden" name="qids" id="qids" value="${qids}" />
+  <input type="hidden" name="questions" id="questions" value="${questions}" />
+  <input type="hidden" name="sents" id="sents" value="${sents}" /> 
+<!--  <input type="hidden" name="questions" id="questions" value="Q1	Q2" />
+  <input type="hidden" name="sents" id="sents" value="S1|S2|S3	S4" /> -->
+  <input type="hidden" name="responses" id="responses" value="" />
+
+  <div id="tasklist">
+  <div id="template" class="panel panel-default hidden">
+    <div class="panel-heading">
+      <h4 class="panel-title">Part @@n@@</h4>
+    </div>
+    <p>Question: <b>@@question@@</b></p>
+  </div>
+  <div id="inner-template" class="hidden">
+    <div class="form-group" style="padding: 10px;">
+      <label class="radio-inline"><input type="radio" name="is-good-@@i@@-@@j@@" value="yes"> Yes </label>
+      <label class="radio-inline"><input type="radio" name="is-good-@@i@@-@@j@@" value="no"> No </label>
+      <b> @@sent@@ </b>
+    </div>
+  </div>
+  </div>
+
+  <div class="alert alert-danger hidden" id="errorBox">
+    Some responses were not filled.
+  </div>
+  <div class="alert alert-success hidden" id="successBox">
+    Thank you for your input!
+  </div>
+
+
+<input name="submit" class="btn btn-primary" type="submit" id="submitButton" value="Submit" />
+
+    <script type="text/javascript">
+
+function getQuestions() {
+  return $("#questions").attr("value").split("\t");
+}
+
+function getSents() {
+  var sent_lists = $("#sents").attr("value").split("\t");
+  var ans = [];
+  for (var i = 0; i < sent_lists.length; i++) {
+    ans.push(sent_lists[i].split("|"));
+  }
+  return ans;
+}
+
+  // Aggregate output.
+function validateInputs() {
+  // Check that the input has been inserted.
+  var sents = getSents();
+  var success = true;
+  var isGoodStr = "";
+  for (var i = 0; i < sents.length; i++) {
+    if (i > 0) {
+      isGoodStr += "\t";
+    }
+    for (var j = 0; j < sents[i].length; j++) {
+      var isGood = $("input[name='is-good-" + i + "-" + j + "']:checked").val();
+      if (isGood) {
+        if (j > 0) {
+          isGoodStr += "|";
+        }
+        isGoodStr += isGood;
+      } else {
+        success = false;
+      }
+    }
+  }
+  console.log(isGoodStr);
+  $('#responses').attr("value", isGoodStr);
+
+  if (success) {
+    $("#errorBox").addClass("hidden");
+    $("#successBox").removeClass("hidden");
+  } else {
+    $("#errorBox").removeClass("hidden");
+    $("#successBox").addClass("hidden");
+  }
+  return success;
+}
+
+// Create a copy of the template class and replace key variables.
+function setup(i, q, s) {
+  console.log(s)
+  var task = $("#template").clone();
+  // Set id
+  task.attr("id", "task-"+i);
+  // Replace @@i@@ and @@sent@@.
+  task.html(task.html()
+      .replace(/@@i@@/g, i)
+      .replace(/@@n@@/g, i+1)
+      .replace(/@@question@@/, q));
+  // Make visible.
+  task.removeClass("hidden");
+  // Add all inner templates
+  for (var j = 0; j < s.length; j++) {
+    console.log(s[j])
+    var inner_task = $("#inner-template").clone();
+    inner_task.html(inner_task.html()
+        .replace(/@@i@@/g, i)
+        .replace(/@@j@@/g, j)
+        .replace(/@@sent@@/, s[j]));
+    inner_task.removeClass("hidden");
+    task.append(inner_task);
+  }
+  // Add to the tasklist
+  $("#tasklist").append(task);
+}
+
+$(document).ready(function() {
+  // Split prompts.
+  var questions = getQuestions();
+  var sents = getSents();
+  // Set HTML for each task.
+  for (var i = 0; i < questions.length; i++) {
+    setup(i, questions[i], sents[i]);
+  }
+
+  // Capture the submit button.
+  $('#submitButton').click(validateInputs);
+});
+    </script>
+
+</div>
+
+</div>
+
+
+    </div>
+  </body>
+</html>

@@ -1,0 +1,4 @@
+tensorflow
+nltk
+tqdm
+jinja2

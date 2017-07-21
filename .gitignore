@@ -1,0 +1,8 @@
+*.pyc
+*__pycache__
+corenlp.log
+out/
+data/squad
+glove
+nectar
+src/py/nectar
