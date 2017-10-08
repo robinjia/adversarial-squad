@@ -5,10 +5,10 @@ This repository contains code for the paper:
 > Robin Jia and Percy Liang  
 > Empirical Methods in Natural Language Processing (EMNLP), 2017.  
 
-*Note:* if you want to run adversarial evaluation on your own SQuAD model, please see 
-[our Codalab worksheet](https://worksheets.codalab.org/worksheets/0xc86d3ebe69a3427d91f9aaa63f7d1e7d/)
-for instructions.
-This git repository exposes the code that was used to generate some of the files 
+*Note:* To download our adversarial data, view all of our experiments, 
+and find instructions for running adversarial evaluation on your own SQuAD model, please see 
+[our Codalab worksheet](https://worksheets.codalab.org/worksheets/0xc86d3ebe69a3427d91f9aaa63f7d1e7d/).
+This git repository just exposes the code that was used to generate some of the files 
 on that Codalab worksheet.
 
 ## Dependencies
